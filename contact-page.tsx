@@ -39,15 +39,21 @@ export default function ContactPage() {
     e.preventDefault()
     setStatus('sending')
 
-    const formData = new URLSearchParams()
-    formData.append('form-name', 'contact')
-    Object.entries(form).forEach(([key, value]) => formData.append(key, value))
-
+    /*
+      POST to '/__forms.html' — the static file in /public.
+      This is Netlify's official pattern for Next.js App Router.
+      Netlify intercepts this POST at the edge and records the submission.
+      Posting to '/' does NOT work with Next.js App Router.
+    */
     try {
-      const res = await fetch('/', {
+      const res = await fetch('/__forms.html', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: formData.toString(),
+        body: new URLSearchParams({
+          'form-name': 'contact',
+          'bot-field': '',
+          ...form,
+        }).toString(),
       })
 
       if (res.ok) {
@@ -66,9 +72,14 @@ export default function ContactPage() {
 
       {/* Hero */}
       <section className="page-hero pt-36 pb-24">
-        <div className="max-w-7xl mx-auto px-6">
-          <h1 className="text-white text-4xl font-bold mb-4">Partner With Us</h1>
-          <p className="text-white/60 max-w-xl">
+        <div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-12">
+          <div className="eyebrow mb-5" style={{ color: 'rgba(232,237,242,0.6)' }}>
+            <div className="gold-rule-solid" />Partner With Us
+          </div>
+          <h1 className="font-display font-bold text-white mb-4" style={{ fontSize: 'clamp(2.5rem, 5vw, 4rem)', lineHeight: 1.08 }}>
+            Start a Conversation
+          </h1>
+          <p className="font-body text-white/60 max-w-xl" style={{ fontSize: '1.05rem', lineHeight: 1.75 }}>
             If you are ready to operate at a global standard, we would like to hear from you.
           </p>
         </div>
@@ -79,41 +90,43 @@ export default function ContactPage() {
         <div className="max-w-3xl mx-auto px-6">
 
           {status === 'sent' ? (
-            <div className="text-center p-10 border">
-              <h3 className="text-2xl font-bold mb-3">Message Received</h3>
-              <p>We&apos;ll get back to you shortly.</p>
-              <Link href="/" className="btn-primary mt-6 inline-block">Return Home</Link>
+            <div className="text-center p-12 border border-[rgba(13,30,58,0.08)]">
+              <div className="w-12 h-12 mx-auto mb-6 flex items-center justify-center" style={{ background: '#B8892A' }}>
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                  <path d="M4 10l4 4 8-8" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </div>
+              <h3 className="font-display font-bold text-navy text-2xl mb-3">Message Received</h3>
+              <p className="font-body text-slate mb-8">Our team will respond within two business days.</p>
+              <Link href="/" className="btn-primary">Return Home</Link>
             </div>
           ) : (
             <>
               {status === 'error' && (
                 <div className="mb-6 p-4 border border-red-300 bg-red-50 text-red-700 font-ui text-sm">
-                  Something went wrong. Please try again or email us directly at enquiries@chabentech.com
+                  Something went wrong. Please try again or email us directly at{' '}
+                  <a href="mailto:enquiries@chabentech.com" className="underline">enquiries@chabentech.com</a>
                 </div>
               )}
 
-              {/* 
-                IMPORTANT: Netlify detects this form at BUILD TIME by scanning HTML.
-                The hidden input and data-netlify="true" are required.
-                The `name="contact"` must match the form-name value in handleSubmit.
-              */}
               <form
                 name="contact"
-                method="POST"
-                data-netlify="true"
-                netlify-honeypot="bot-field"
                 onSubmit={handleSubmit}
-                className="p-8 border"
+                className="p-8 lg:p-12 border border-[rgba(13,30,58,0.08)]"
               >
-                {/* Required hidden inputs for Netlify */}
+                {/* Hidden inputs required by Netlify - do not remove */}
                 <input type="hidden" name="form-name" value="contact" />
-                {/* Honeypot spam field - hidden from real users */}
-                <p style={{ display: 'none' }}>
-                  <label>Don&apos;t fill this out: <input name="bot-field" /></label>
-                </p>
+                <div style={{ display: 'none' }}>
+                  <label>
+                    Do not fill this field:{' '}
+                    <input name="bot-field" tabIndex={-1} autoComplete="off" />
+                  </label>
+                </div>
 
-                <h2 className="text-2xl font-bold mb-2">Initiate a Conversation</h2>
-                <p className="font-ui text-xs text-slate/60 tracking-wide mb-8">
+                <h2 className="font-display font-bold text-navy mb-2" style={{ fontSize: '1.8rem' }}>
+                  Initiate a Conversation
+                </h2>
+                <p className="font-ui text-[10px] tracking-[0.15em] uppercase text-slate/50 mb-10">
                   All fields marked * are required
                 </p>
 
@@ -200,7 +213,7 @@ export default function ContactPage() {
                   </div>
                 </div>
 
-                <div className="mb-6">
+                <div className="mb-8">
                   <label className="form-label">Message *</label>
                   <textarea
                     name="message"
@@ -217,7 +230,10 @@ export default function ContactPage() {
                   type="submit"
                   disabled={status === 'sending'}
                   className="btn-gold w-full justify-center"
-                  style={{ opacity: status === 'sending' ? 0.7 : 1 }}
+                  style={{
+                    opacity: status === 'sending' ? 0.7 : 1,
+                    cursor: status === 'sending' ? 'not-allowed' : 'pointer',
+                  }}
                 >
                   {status === 'sending' ? 'Sending...' : 'Submit Enquiry →'}
                 </button>

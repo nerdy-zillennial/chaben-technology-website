@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+  <head><title>Netlify Form Detection</title></head>
+  <body>
+    <!--
+      CRITICAL FILE - DO NOT DELETE.
+      
+      Netlify cannot detect forms in Next.js pages because Next.js renders
+      dynamically. This static file in /public lets Netlify find the form
+      at build time AND serves as the POST target for submissions.
+      
+      The fetch in contact/page.tsx posts to '/__forms.html' - this file.
+    -->
+    <form name="contact" netlify netlify-honeypot="bot-field" hidden>
+      <input type="hidden" name="form-name" value="contact" />
+      <input name="bot-field" type="text" />
+      <input name="name" type="text" />
+      <input name="company" type="text" />
+      <input name="role" type="text" />
+      <input name="email" type="email" />
+      <input name="phone" type="tel" />
+      <input name="service" type="text" />
+      <textarea name="message"></textarea>
+    </form>
+  </body>
+</html>

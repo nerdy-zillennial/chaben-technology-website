@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+  <head><title>Netlify Form Detection</title></head>
+  <body>
+    <!--
+      This file exists solely so Netlify can detect the contact form at build time.
+      Next.js renders pages dynamically, so Netlify's crawler cannot find the form
+      in the compiled output. This static HTML gives it the form definition it needs.
+      
+      DO NOT DELETE THIS FILE.
+    -->
+    <form
+      name="contact"
+      netlify
+      netlify-honeypot="bot-field"
+      hidden
+    >
+      <input type="hidden" name="form-name" value="contact" />
+      <input name="bot-field" />
+      <input name="name" />
+      <input name="company" />
+      <input name="role" />
+      <input name="email" />
+      <input name="phone" />
+      <input name="service" />
+      <textarea name="message"></textarea>
+    </form>
+  </body>
+</html>
